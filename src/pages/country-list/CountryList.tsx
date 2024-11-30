@@ -5,6 +5,8 @@ import CardView from "../../common/card/CardView";
 import { COLOR } from "../../utils/ColorConstant";
 import { maxWidth, viewPort } from "../../utils/responsive/ViewPort";
 import Filter from "../../common/filter/Filter";
+import { useEffect, useState } from "react";
+import countryListService from "../../service/countryList.service";
 
 const top100Films = [
   { label: "The", year: 1994 },
@@ -18,6 +20,15 @@ const top100Films = [
 
 const CountryList = () => {
   const mobileView = maxWidth(viewPort.maxMobile);
+  const [countryList, setCountryList] = useState<any>();
+  useEffect(() => {
+    getCountryList();
+  }, []);
+
+  const getCountryList = async () => {
+    const response = await countryListService.fetchCountryList();
+    setCountryList(response?.data || []);
+  };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", px: "1rem" }}>
       <Navbar />
@@ -58,8 +69,15 @@ const CountryList = () => {
           )}
         /> */}
       </Box>
-      <Box sx={{ marginTop: "1rem" }}>
-        <CardView />
+      <Box sx={{ marginTop: "1rem", display: "flex", flexWrap: "wrap" }}>
+        {countryList &&
+          countryList.map((country: any) => {
+            return (
+              <Box sx={{ margin: "1rem" }}>
+                <CardView country={country} />
+              </Box>
+            );
+          })}
       </Box>
       <Box
         sx={{
