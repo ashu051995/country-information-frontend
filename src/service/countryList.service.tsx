@@ -1,10 +1,10 @@
 import { api } from "../constants/api.constant";
 import { apiGatewayInstance } from "./axios-instances";
 
-const fetchCountryList = () => {
+const fetchCountryList = (params: Record<string, any>) => {
   console.log("countrylIst service");
   return apiGatewayInstance
-    .get(`${api.country}`)
+    .get(`${api.country}`, { params })
     .then((response: any) => {
       return response;
     })
