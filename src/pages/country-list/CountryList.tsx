@@ -1,10 +1,19 @@
-import { Autocomplete, Box, TextField, Button } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  TextField,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 
 import Navbar from "../../common/navbar/Navbar";
 import CardView from "../../common/card/CardView";
 import { COLOR } from "../../utils/ColorConstant";
 import { maxWidth, viewPort } from "../../utils/responsive/ViewPort";
 import Filter from "../../common/filter/Filter";
+import { useEffect, useState } from "react";
+import countryListService from "../../service/countryList.service";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const top100Films = [
   { label: "The", year: 1994 },
@@ -16,8 +25,41 @@ const top100Films = [
   { label: "Pulp Fiction", year: 1994 },
 ];
 
+interface PaginationState {
+  index: number;
+  hasMore: boolean;
+}
+
 const CountryList = () => {
+  const limit = 15;
   const mobileView = maxWidth(viewPort.maxMobile);
+  const [countryList, setCountryList] = useState<any>();
+  const [paginationState, setPaginationState] = useState<PaginationState>({
+    index: 0,
+    hasMore: false,
+  });
+  useEffect(() => {
+    getCountryList();
+  }, []);
+
+  const getCountryList = async () => {
+    const response = await countryListService.fetchCountryList({
+      limit: limit,
+      index: paginationState.index,
+    });
+
+    const updateCountryList = countryList
+      ? [...countryList, ...response?.data]
+      : response?.data;
+
+    setCountryList(updateCountryList);
+
+    const pStateUpdate = {
+      index: paginationState.index + 1,
+      hasMore: response?.data?.length % limit === 0 ? true : false,
+    };
+    setPaginationState(pStateUpdate);
+  };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", px: "1rem" }}>
       <Navbar />
@@ -58,25 +100,40 @@ const CountryList = () => {
           )}
         /> */}
       </Box>
-      <Box sx={{ marginTop: "1rem" }}>
-        <CardView />
-      </Box>
-      <Box
-        sx={{
-          marginY: "1rem",
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Button
-          sx={{ height: "3rem", borderRadius: "0.6rem" }}
-          variant="contained"
+      {countryList ? (
+        <InfiniteScroll
+          dataLength={countryList?.length}
+          next={() => {
+            getCountryList();
+          }}
+          hasMore={paginationState.hasMore}
+          loader={
+            <Box
+              sx={{
+                textAlign: "center",
+                marginTop: "1.25rem",
+                overflow: "hidden",
+              }}
+            >
+              <CircularProgress color="inherit" />
+            </Box>
+          }
         >
-          Load More
-        </Button>
-      </Box>
+          <Box sx={{ marginTop: "1rem", display: "flex", flexWrap: "wrap" }}>
+            {countryList.map((country: any) => {
+              return (
+                <Box sx={{ margin: "1rem" }}>
+                  <CardView country={country} />
+                </Box>
+              );
+            })}
+          </Box>
+        </InfiniteScroll>
+      ) : (
+        <Box
+          sx={{ textAlign: "center", marginTop: "2rem", padding: "2rem" }}
+        ></Box>
+      )}
     </Box>
   );
 };
