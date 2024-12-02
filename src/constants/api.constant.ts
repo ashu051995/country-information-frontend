@@ -2,6 +2,7 @@ const COUNTRIES="countries"
 
 export const api = {
     
-    country:`${COUNTRIES}`
+    country:`${COUNTRIES}`,
+    searchCountry:`${COUNTRIES}/country-search`
 
 }
