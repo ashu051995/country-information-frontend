@@ -10,6 +10,7 @@ import CardActions from "@mui/material/CardActions";
 import { Box } from "@mui/material";
 import { COLOR } from "../../utils/ColorConstant";
 import { useNavigate } from "react-router-dom";
+import LazyImage from "../lazy-image/LazyImage";
 
 interface CardProps {
   country: any;
@@ -28,8 +29,7 @@ export default function CardView(props: CardProps) {
       <Card sx={{ width: 300 }}>
         <CardActionArea>
           <Box sx={{ display: "flex" }}>
-            <img
-              style={{ objectFit: "cover" }}
+            <LazyImage
               height="140px"
               width="100px"
               src={flags?.svg}
