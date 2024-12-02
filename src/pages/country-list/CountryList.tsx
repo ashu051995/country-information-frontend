@@ -14,6 +14,7 @@ import Filter from "../../common/filter/Filter";
 import { useEffect, useState } from "react";
 import countryListService from "../../service/countryList.service";
 import InfiniteScroll from "react-infinite-scroll-component";
+import useDebounce from "../../hooks/useDebounce";
 
 const top100Films = [
   { label: "The", year: 1994 },
@@ -31,38 +32,85 @@ interface PaginationState {
 }
 
 const CountryList = () => {
-  const limit = 15;
-  const mobileView = maxWidth(viewPort.maxMobile);
   const [countryList, setCountryList] = useState<any>();
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [searchType, setSearchType] = useState<string>("name");
   const [paginationState, setPaginationState] = useState<PaginationState>({
     index: 0,
     hasMore: false,
   });
+
+  const limit = 15;
+  const mobileView = maxWidth(viewPort.maxMobile);
+  const debounceInput = useDebounce(searchValue, 300);
+
   useEffect(() => {
     getCountryList();
   }, []);
 
-  const getCountryList = async () => {
+  useEffect(() => {
+    if (debounceInput.length >= 3) {
+      searchCountryList();
+    } else if (debounceInput.length < 1) {
+      getCountryList(true);
+    }
+  }, [debounceInput]);
+
+  const searchCountryList = async (isScrolled?: boolean) => {
+    const response = await countryListService.searchCountrylist({
+      limit: limit,
+      index: paginationState.index,
+      name: searchValue.toLocaleLowerCase(),
+      searchType: searchType,
+    });
+    const updateCountryList =
+      countryList && isScrolled
+        ? [...countryList, ...response?.data]
+        : response?.data;
+
+    const pStateUpdate = {
+      index: isScrolled ? paginationState.index + 1 : 0,
+      hasMore: response?.data?.length % limit === 0 ? true : false,
+    };
+    setCountryList(updateCountryList);
+    setPaginationState(pStateUpdate);
+  };
+
+  const getCountryList = async (resetPagination?: boolean) => {
     const response = await countryListService.fetchCountryList({
       limit: limit,
       index: paginationState.index,
     });
 
-    const updateCountryList = countryList
-      ? [...countryList, ...response?.data]
-      : response?.data;
+    const updateCountryList =
+      countryList && !resetPagination
+        ? [...countryList, ...response?.data]
+        : response?.data;
 
     setCountryList(updateCountryList);
 
     const pStateUpdate = {
-      index: paginationState.index + 1,
+      index: resetPagination ? 0 : paginationState.index + 1,
       hasMore: response?.data?.length % limit === 0 ? true : false,
     };
     setPaginationState(pStateUpdate);
   };
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+  };
+
+  const handleSearchType = (value: string) => {
+    setSearchType(value);
+  };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", px: "1rem" }}>
-      <Navbar />
+      <Navbar
+        searchType={searchType}
+        searchValue={searchValue}
+        handleSearch={handleSearch}
+        handleSearchType={handleSearchType}
+      />
       <Box
         sx={{
           display: "flex",
@@ -71,40 +119,12 @@ const CountryList = () => {
         }}
       >
         <Filter filterName="Region" />
-        {/* <Autocomplete
-          disablePortal
-          multiple
-          options={top100Films}
-          sx={{
-            maxWidth: "10rem",
-            width: "100%",
-            height: "2rem",
-            borderRadius: "20px",
-            "& .MuiOutllinedInput-root .muiAutocomplete-input": {
-              padding: "4px 4px 7.5px 5px",
-              height: "1rem",
-            },
-          }}
-          renderInput={(params) => (
-            <TextField
-              sx={{
-                "& .MuiInputBase-root": {
-                  //   background: COLOR.lighGray,
-                  borderRadius: "1rem",
-                  height: mobileView ? "2rem" : "2.8rem",
-                },
-              }}
-              {...params}
-              label=""
-            />
-          )}
-        /> */}
       </Box>
       {countryList ? (
         <InfiniteScroll
           dataLength={countryList?.length}
           next={() => {
-            getCountryList();
+            searchValue ? searchCountryList(true) : getCountryList();
           }}
           hasMore={paginationState.hasMore}
           loader={

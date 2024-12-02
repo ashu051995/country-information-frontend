@@ -14,7 +14,6 @@ const fetchCountryList = (params: Record<string, any>) => {
 };
 
 const fetchCountryDetail = (code: string) => {
-  console.log("countrylIst service");
   return apiGatewayInstance
     .get(`${api.country}/${code}`)
     .then((response: any) => {
@@ -24,7 +23,20 @@ const fetchCountryDetail = (code: string) => {
       return Promise.reject(error);
     });
 };
+
+const searchCountrylist = (params: Record<string, any>) => {
+  return apiGatewayInstance
+    .get(`${api.searchCountry}`, { params })
+    .then((response: any) => {
+      return response;
+    })
+    .catch((err: any) => {
+      return Promise.reject(err);
+    });
+};
+
 export default {
   fetchCountryList,
   fetchCountryDetail,
+  searchCountrylist,
 };
