@@ -11,22 +11,42 @@ import { Box } from "@mui/material";
 import { COLOR } from "../../utils/ColorConstant";
 import { useNavigate } from "react-router-dom";
 import LazyImage from "../lazy-image/LazyImage";
+import { add, sub, format } from "date-fns";
 
 interface CardProps {
   country: any;
 }
 export default function CardView(props: CardProps) {
-  const { name, code, capital, population, flags, region } = {
+  const { name, code, capital, population, flags, region, timezones } = {
     ...props?.country,
   };
+
+  const formatedOffSet = timezones[0]?.replace?.("UTC", "")?.split(":");
   const navigate = useNavigate();
+
+  let dateTimeZoned = new Date();
+  if (formatedOffSet[0] && parseInt(formatedOffSet[0]) > 0) {
+    dateTimeZoned = add(new Date(), {
+      hours: parseInt(formatedOffSet[0]),
+      minutes: parseInt(formatedOffSet[1]),
+    });
+  } else if (formatedOffSet[0]) {
+    dateTimeZoned = sub(new Date(), {
+      hours: parseInt(formatedOffSet[0]),
+      minutes: parseInt(formatedOffSet[1]),
+    });
+  }
+
+  const draftDate = format(dateTimeZoned, "MMM daa, paa");
+  console.log("formattime", draftDate);
+
   return (
     <div
       onClick={() => {
         navigate(`/${code}`);
       }}
     >
-      <Card sx={{ width: 300 }}>
+      <Card sx={{ width: 320 }}>
         <CardActionArea>
           <Box sx={{ display: "flex" }}>
             <LazyImage
@@ -103,7 +123,7 @@ export default function CardView(props: CardProps) {
                     color: COLOR.grey,
                   }}
                 >
-                  {code}
+                  {draftDate}
                 </Typography>
               </Box>
             </Box>
