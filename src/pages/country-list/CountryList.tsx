@@ -1,30 +1,24 @@
-import {
-  Autocomplete,
-  Box,
-  TextField,
-  Button,
-  CircularProgress,
-} from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 
 import Navbar from "../../common/navbar/Navbar";
 import CardView from "../../common/card/CardView";
-import { COLOR } from "../../utils/ColorConstant";
 import { maxWidth, viewPort } from "../../utils/responsive/ViewPort";
 import Filter from "../../common/filter/Filter";
 import { useEffect, useState } from "react";
 import countryListService from "../../service/countryList.service";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useDebounce from "../../hooks/useDebounce";
+import OverlayLoader from "../../common/overlay-loader/OverLoader";
 
-const top100Films = [
-  { label: "The", year: 1994 },
-  { label: "father", year: 1972 },
-  { label: "od", year: 1974 },
-  { label: "The Dark Knight", year: 2008 },
-  { label: "12 Angry Men", year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: "Pulp Fiction", year: 1994 },
-];
+// const top100Films = [
+//   { label: "The", year: 1994 },
+//   { label: "father", year: 1972 },
+//   { label: "od", year: 1974 },
+//   { label: "The Dark Knight", year: 2008 },
+//   { label: "12 Angry Men", year: 1957 },
+//   { label: "Schindler's List", year: 1993 },
+//   { label: "Pulp Fiction", year: 1994 },
+// ];
 
 interface PaginationState {
   index: number;
@@ -35,6 +29,7 @@ const CountryList = () => {
   const [countryList, setCountryList] = useState<any>();
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchType, setSearchType] = useState<string>("name");
+  const [loading, setLoading] = useState<boolean>(false);
   const [paginationState, setPaginationState] = useState<PaginationState>({
     index: 0,
     hasMore: false,
@@ -57,12 +52,14 @@ const CountryList = () => {
   }, [debounceInput]);
 
   const searchCountryList = async (isScrolled?: boolean) => {
+    setLoading(true);
     const response = await countryListService.searchCountrylist({
       limit: limit,
       index: paginationState.index,
       name: searchValue.toLocaleLowerCase(),
       searchType: searchType,
     });
+    setLoading(false);
     const updateCountryList =
       countryList && isScrolled
         ? [...countryList, ...response?.data]
@@ -77,11 +74,12 @@ const CountryList = () => {
   };
 
   const getCountryList = async (resetPagination?: boolean) => {
+    setLoading(true);
     const response = await countryListService.fetchCountryList({
       limit: limit,
       index: paginationState.index,
     });
-
+    setLoading(false);
     const updateCountryList =
       countryList && !resetPagination
         ? [...countryList, ...response?.data]
@@ -105,6 +103,7 @@ const CountryList = () => {
   };
   return (
     <Box sx={{ display: "flex", flexDirection: "column", px: "1rem" }}>
+      <OverlayLoader show={loading} />
       <Navbar
         searchType={searchType}
         searchValue={searchValue}
