@@ -111,15 +111,6 @@ const CountryList = () => {
         handleSearch={handleSearch}
         handleSearchType={handleSearchType}
       />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "end",
-          marginTop: "1rem",
-        }}
-      >
-        <Filter filterName="Region" />
-      </Box>
       {countryList ? (
         <InfiniteScroll
           dataLength={countryList?.length}
