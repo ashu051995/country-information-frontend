@@ -79,9 +79,9 @@ const Navbar = (props: NavbarProps) => {
                 aria-placeholder="Search Type"
               >
                 <MenuItem value={"name"}>Name</MenuItem>
-                <MenuItem value={"capital"}>Capital</MenuItem>
+                {/* <MenuItem value={"capital"}>Capital</MenuItem> */}
                 <MenuItem value={"region"}>Region</MenuItem>
-                <MenuItem value={"timeZone"}>TimeZone</MenuItem>
+                {/* <MenuItem value={"timeZone"}>TimeZone</MenuItem> */}
               </Select>
             </Box>
             <TextField
