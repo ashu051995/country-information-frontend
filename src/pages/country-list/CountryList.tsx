@@ -35,7 +35,7 @@ const CountryList = () => {
     hasMore: false,
   });
 
-  const limit = 15;
+  const limit = 16;
   const mobileView = maxWidth(viewPort.maxMobile);
   const debounceInput = useDebounce(searchValue, 300);
 
@@ -129,10 +129,21 @@ const CountryList = () => {
             </Box>
           }
         >
-          <Box sx={{ marginTop: "1rem", display: "flex", flexWrap: "wrap" }}>
+          <Box
+            sx={{
+              marginTop: "1rem",
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: mobileView ? "center" : "start",
+            }}
+          >
             {countryList.map((country: any) => {
               return (
-                <Box sx={{ margin: "1rem" }}>
+                <Box
+                  sx={{
+                    margin: "1rem",
+                  }}
+                >
                   <CardView country={country} />
                 </Box>
               );

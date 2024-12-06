@@ -6,7 +6,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
   TextField,
   Toolbar,
 } from "@mui/material";
@@ -63,6 +62,8 @@ const Navbar = (props: NavbarProps) => {
               justifyContent: "center",
               alignItems: "center",
               py: "1rem",
+              flexDirection: mobileView ? "column" : "row",
+              gap: mobileView ? "0.6rem" : "",
             }}
           >
             <InputLabel id="demo-simple-select-label">Search Type</InputLabel>
