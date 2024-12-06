@@ -73,7 +73,7 @@ const Navbar = (props: NavbarProps) => {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={searchType}
-                label="Age"
+                label="Select"
                 onChange={(e) => {
                   handleSearchType(e?.target?.value);
                 }}

@@ -9,9 +9,10 @@ import { COLOR } from "../../utils/ColorConstant";
 import { useNavigate } from "react-router-dom";
 import LazyImage from "../lazy-image/LazyImage";
 import { add, sub, format } from "date-fns";
+import { CountryDetailInterface } from "../../interface/interface";
 
 interface CardProps {
-  country: any;
+  country: CountryDetailInterface;
 }
 export default function CardView(props: CardProps) {
   const { name, code, capital, population, flags, region, timezones } = {

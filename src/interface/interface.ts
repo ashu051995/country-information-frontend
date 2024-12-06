@@ -22,7 +22,9 @@ interface Currency {
     population:number;
     cca2:string;
     continents:any[];
-    currencies:Currency
+    currencies:Currency,
+    timezones:string[],
+    code:string;
 }
 
 

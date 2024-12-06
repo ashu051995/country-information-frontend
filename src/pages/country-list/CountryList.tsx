@@ -9,6 +9,7 @@ import countryListService from "../../service/countryList.service";
 import InfiniteScroll from "react-infinite-scroll-component";
 import useDebounce from "../../hooks/useDebounce";
 import OverlayLoader from "../../common/overlay-loader/OverLoader";
+import { CountryDetailInterface } from "../../interface/interface";
 
 // const top100Films = [
 //   { label: "The", year: 1994 },
@@ -26,7 +27,7 @@ interface PaginationState {
 }
 
 const CountryList = () => {
-  const [countryList, setCountryList] = useState<any>();
+  const [countryList, setCountryList] = useState<CountryDetailInterface[]>();
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchType, setSearchType] = useState<string>("name");
   const [loading, setLoading] = useState<boolean>(false);
